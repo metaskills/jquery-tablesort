@@ -69,7 +69,7 @@ class $.tablesort
   headerClicked: (event) =>
     th = $(event.target)
     dir = @getDefaultOrReverseDirection(th)
-    @sort th dir
+    @sort th, dir
   
   getDefaultOrReverseDirection: (th, preferedDir) ->
     return preferedDir if preferedDir
