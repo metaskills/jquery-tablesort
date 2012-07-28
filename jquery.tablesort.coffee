@@ -14,6 +14,8 @@ class $.tablesort
     debug: @DEBUG
     asc:   'sorted ascending'
     desc:  'sorted descending'
+    theadSelector: 'thead'
+    thSelector:    'th'
     tbodySelector: 'tbody:first'
     trSelector:    'tr'
   
@@ -21,8 +23,9 @@ class $.tablesort
     @table = $(table)
     @settings = $.extend {}, @constructor.defaults, settings
     @tableBody = @table.find @settings.tbodySelector
-    @tableHeaders = @table.find('thead th')
+    @tableHeaders = @table.find(@settings.theadSelector).find(@settings.thSelector)
     @tableHeaders.bind 'click.tablesort', @headerClicked
+    @tableHeaders.addClass 'sortable'
     @sortedHeader = null
     @sortedDirection = null
     @sortedIndex = null
@@ -39,6 +42,9 @@ class $.tablesort
     @sortedHeader.addClass @settings[@sortedDirection]
     @log "Sort finished in #{(new Date()).getTime() - start.getTime()} ms"
     @table.trigger 'tablesort:complete', [@]
+
+  resort: ->
+    @sort(@sortedHeader, @sortedDirection) if @sortedHeader and @sortedDirection
 
   destroy: ->
     @tableHeaders.unbind 'click.tablesort'
@@ -67,7 +73,8 @@ class $.tablesort
     @sortedIndex = @tableHeaders.index(th)
   
   headerClicked: (event) =>
-    th = $(event.target)
+    event.stopPropagation()
+    th = $(event.currentTarget)
     dir = @getDefaultOrReverseDirection(th)
     @sort th, dir
   
